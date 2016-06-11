@@ -1,0 +1,12 @@
+#
+*.o
+*.a
+*.so
+*.lib
+*.dll
+.header
+*.bwt
+*.huff
+*.runl
+Build/
+/Debug/
