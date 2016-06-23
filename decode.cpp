@@ -54,7 +54,11 @@ int main(int argc, char** argv)
     // Header do arquivo comprimido
     char algs[3]; // algoritmos usados em ordem, ex: 'bhr' (BWT, Huffman, RLE)
     fstream in_file(in_file_name, fstream::in | fstream::binary);
-    {
+    if(!in_file.is_open()) {
+    	cerr << "Error: could not open file '" << in_file_name << "'" << endl;
+    	return 1;
+    }
+    else {
         in_file.read(&algs[0], 3*sizeof(char));
         
         // separando a header do conteudo
@@ -95,6 +99,11 @@ int main(int argc, char** argv)
     // arquivo temporario identico ao de entrada para o processo de codificacao
     {
         fstream temp(".temp", fstream::out | fstream::binary);
+        if (!temp.is_open())
+        {
+        	cerr << "Error: could not create file" << endl;
+        	return 1;
+        }
         copy_file(temp, in_file);
     }
     // Decodificacao
@@ -110,9 +119,7 @@ int main(int argc, char** argv)
         }
     }
     // Escrita de todos os dados decodificados para o arquivo de saida
-    {
-        header_file.close();
-        
+    {        
         fstream out_file(out_file_name, fstream::out | fstream::binary);
         // copia do arquivo temporario para o arquivo de saida
         fstream temp(".temp", fstream::in | fstream::binary);
