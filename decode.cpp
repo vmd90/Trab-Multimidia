@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include "algs_decode.hpp"
 #include "utils.hpp"
+
 using namespace std;
 
 void help();
@@ -37,7 +38,7 @@ int main(int argc, char** argv)
             out_file_name = argv[i];
         }
         else {
-            cerr << "Error found: " << arg << " in argument " << i << endl;
+            cerr << "Error: " << arg << " in argument " << i << endl;
             error = true;
             break;
         }
