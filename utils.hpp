@@ -18,7 +18,7 @@ void copy_file(std::fstream&, std::fstream&);
  * @param e Expoente
  * @return potencia calculada
  */
-unsigned char pow(unsigned char, unsigned char);
+char power(char b, char e);
 
 #endif /* UTILS_HPP */
 

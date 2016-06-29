@@ -213,12 +213,12 @@ public:
 /**
  * Escreve no arquivo o buffer de tamanho 8 (converte de string para 1 byte)
  */
-void write_file(fstream& out_file, const char *buffer)
+void write_file(fstream& out_file, char *buffer)
 {
     char num = 0;
-    for (int j = 0, k = 6; k >= 0; j++, k--) {
-        if (buffer[k] == '1') {
-            num += pow(2, j);
+    for (char j = 0; j < 8; j++) {
+        if (buffer[j] == '1') {
+            num += power(2, j);
         }
     }
     out_file.write(reinterpret_cast<const char*> (&num), sizeof (num));
@@ -230,19 +230,14 @@ void write_file(fstream& out_file, const char *buffer)
  */
 void convert_int2str(char num, string& buffer)
 {
-    string str(7, '0');
-    for(int i = 0; i < buffer.size(); ++i) {
+    for(int i = 0; i < 8; ++i) {
         char m = num % 2;
         if(num < 2) {
-            buffer[i] = num == '\0' ? '0' : '1';
+            buffer[i] = num == 0 ? '0' : '1';
             break;
         }
-        buffer[i] = m == '\0' ? '0' : '1';
-        num /= 2;
-    }
-    str = buffer;
-    for(int i = buffer.size()-1, j = 0; i >= 0 && j < str.size(); i--, j++) {
-        buffer[i] = str[j];
+        buffer[i] = m == 0 ? '0' : '1';
+        num = int(num / 2);
     }
 }
 
@@ -265,11 +260,12 @@ void Huffman_encode()
     while (true) {
         char c;
         in_file.read(&c, sizeof(c)); // lendo byte a byte
-        st.addSymbol(c); // insere novo simbolo na tabela
         if (in_file.eof()) { // fim de arquivo
             break;
         }
+        st.addSymbol(c); // insere novo simbolo na tabela
     }
+    //st.addSymbol('\003'); // EOF marker
     in_file.close();
 
     map<char, string> codes;
@@ -310,6 +306,7 @@ void Huffman_encode()
             in_file.read(&c, sizeof (c)); // lendo byte a byte
             if (in_file.eof()) { // fim de arquivo
                 // escrever o ultimo buffer
+                // append marker EOF
                 write_file(out_file, buffer);
                 break;
             }
@@ -332,8 +329,7 @@ void Huffman_encode()
                 ov_index = 0;
                 ov_size = code.size();                        
                 ::memset(&buffer[0], 0, 8 * sizeof (char));
-                index = 0;
-            }
+                index = 0;            }
             else { // buffer nao cheio, o codigo nao cabe mais
                 // escreve uma parte do codigo no buffer e passa para o arquivo
                 overflow = true;
@@ -367,7 +363,7 @@ void Huffman_decode(const map<string, char>& codes, unsigned int fsize)
     fstream out_file(".temp.huff", fstream::out | fstream::binary);
     fstream in_file(".temp", fstream::in | fstream::binary);
     unsigned int nbytes = 0;  // numero de bytes do arquivo original
-    unsigned char c, symbol;
+    char c, symbol;
     string buffer(8, '0');
     string str;
 
@@ -383,16 +379,14 @@ void Huffman_decode(const map<string, char>& codes, unsigned int fsize)
         for(int i = 0; i < buffer.size(); ++i) {  // Le todo o buffer para extrair o simbolo
             try {
                 str.push_back(buffer[i]);
-
                 symbol = codes.at(str);
-                
-                out_file.write(reinterpret_cast<const char*>(&symbol), sizeof(symbol));
-                nbytes++;
-                str.clear();
             }
             catch(exception&) {
                 continue;
             }
+            out_file.write(reinterpret_cast<const char*>(&symbol), sizeof(symbol));
+            nbytes++;
+            str.clear();
         }
     }
 

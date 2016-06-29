@@ -11,7 +11,7 @@ Ou use um outro compilador e compile todos os codigos .cpp
 2. COMO EXECUTAR
 -----------------------------------------------------------------------
 No terminal, digite o comando para executar o codificador:
-$ ./encode -i arq_ent.txt -o arq_saida --bwt=X --txtblck=N --huffman=true --runl=true
+$ ./encode -i arq_ent.txt -o arq_saida --bwt=X --txtblck=N --huffman=X --runl=X
 
 Para o decodificador:
 $ ./decode -i arq_ent -o arq_saida.txt

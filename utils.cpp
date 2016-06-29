@@ -14,10 +14,10 @@ void copy_file(std::fstream& outf, std::fstream& inf)
     }
 }
 
-unsigned char pow(unsigned char b, unsigned char e)
+char power(char b, char e)
 {
-    unsigned char p = 1;
-    for (int i = 0; i < e; ++i) {
+    char p = 1;
+    for (char i = 0; i < e; ++i) {
         p *= b;
     }
     return p;
