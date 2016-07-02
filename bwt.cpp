@@ -23,7 +23,8 @@ public:
         mSize = block_size;
         mStrings = new char*[mSize];
         for (int i = 0; i < mSize; ++i) {
-            mStrings[i] = new char[mSize];
+            mStrings[i] = new char[mSize+1]; // '\0'
+			mStrings[i][mSize] = '\0';
         }
     }
 
@@ -68,7 +69,7 @@ public:
     void reverse(string& block, int index)
     {
         for(int i = 0; i < mSize; ++i) {  // limpando os buffers
-            ::memset(&mStrings[i][0], 127, mSize*sizeof(char));
+            ::memset(&mStrings[i][0], '0', mSize*sizeof(char));
         }
         
         for(int i = mSize-1; i >= 0; --i) {
@@ -125,16 +126,13 @@ void BWT_encode(int block_size)
     fstream in_file(".temp", fstream::in | fstream::binary);
     
     while (true) {
-        string block(block_size, 0);
+        string block(block_size, ' ');
         in_file.read(&block[0], block_size*sizeof(char)); // leitura de um bloco no arquivo
-        if (in_file.eof()) { // fim de arquivo
-            break;
-        }
         
         PermutationMatrix m(block_size); // criacao da matriz de permutacoes
         m.forward(block);
         m.sort();
-        //m.print();
+        
         string L; // ultima coluna da matriz de permutacoes
         for (int i = 0; i < m.mSize; ++i) {
             L += m.mStrings[i][m.mSize - 1]; // preenchendo L
@@ -147,10 +145,16 @@ void BWT_encode(int block_size)
                 break;
             }
         }
-        //cout <<"L = " << L << "\nindex = " << index << endl;
+		if (index == -1) { // indice eh a ultima string
+			index = m.mSize - 1;
+		}
         // escreve no arquivo de saida
         out_file.write(&L[0], L.size()*sizeof(char));
         out_file.write(reinterpret_cast<const char*> (&index), sizeof (index));
+
+		if (in_file.eof()) { // fim de arquivo
+			break;
+		}
     }
     out_file.close();
     in_file.close();
@@ -175,16 +179,15 @@ void BWT_decode(int block_size)
         string block(block_size, 0);
         in_file.read(&block[0], block_size*sizeof(char)); // leitura de um bloco no arquivo
         in_file.read(reinterpret_cast<char*>(&index), sizeof(index));
-        if (in_file.eof()) {
-            break;
-        }
 
-        //cout << "L = " << block << "\nindex = " << index;
+		if (in_file.eof()) {  // fim de arquivo
+			break;
+		}
+
         PermutationMatrix m(block_size); // criacao da matriz de permutacoes
         m.reverse(block, index);
         m.sort();
-        //m.print();
-        //cout << "String decod: " << m.mStrings[index];
+        
         // escreve a decodificacao
         out_file.write(&m.mStrings[index][0], m.mSize*sizeof(char));
     }

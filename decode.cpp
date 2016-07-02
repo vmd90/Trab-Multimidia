@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <stdlib.h>
+#include <ctime>
 #include "algs_decode.hpp"
 #include "utils.hpp"
 using namespace std;
@@ -97,6 +98,9 @@ int main(int argc, char** argv)
         fstream temp(".temp", fstream::out | fstream::binary);
         copy_file(temp, in_file);
     }
+    // Tempo
+    time_t start, end;
+    std::time(&start);
     // Decodificacao
     for (int i = 2; i >= 0; --i) {
         if (algs[i] == 'b') {
@@ -109,6 +113,9 @@ int main(int argc, char** argv)
             RunLength_decode();
         }
     }
+    // Tempo 
+    std::time(&end);
+    cout << "Elapsed time: " << end - start << "s" << endl;
     // Escrita de todos os dados decodificados para o arquivo de saida
     {
         header_file.close();

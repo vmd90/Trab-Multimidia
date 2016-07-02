@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <vector>
 #include <string.h>
+#include <ctime>
 #include "algs_encode.hpp"
 #include "utils.hpp"
 using namespace std;
@@ -68,8 +69,9 @@ int main(int argc, char const *argv[])
             else {
                 // Pega o valor bool
                 use_bwt = s == "true" ? true : false;
+                if(use_bwt)
+                	algs[j++] = 'b';
             }
-            algs[j++] = 'b';
         }
         else if (arg.find("--txtblck") != string::npos) {
             // Extrai o parametro txtblck, true ou false
@@ -104,8 +106,9 @@ int main(int argc, char const *argv[])
             else {
                 // Pega o valor bool
                 use_huffman = s == "true" ? true : false;
+                if(use_huffman)
+                	algs[j++] = 'h';
             }
-            algs[j++] = 'h';
         }
         else if (arg.find("--runl") != string::npos) {
             // Extrai o parametro runl, true ou false
@@ -126,8 +129,9 @@ int main(int argc, char const *argv[])
             else {
                 // Pega o valor bool
                 use_runl = s == "true" ? true : false;
+                if(use_runl)
+                	algs[j++] = 'r';
             }
-            algs[j++] = 'r';
         }
         else {
             cerr << "Error found: " << arg << " in argument " << i << endl;
@@ -162,6 +166,9 @@ int main(int argc, char const *argv[])
         fstream in_file(in_file_name, fstream::in | fstream::binary);
         copy_file(temp, in_file);
     }
+    // Tempo
+    time_t start, end;
+    std::time(&start);
     // Compressao dos dados
     for (int i = 0; i < 3; ++i) {
         if (algs[i] == 'b') {
@@ -174,6 +181,9 @@ int main(int argc, char const *argv[])
             RunLength_encode();
         }
     }
+    // Tempo
+    std::time(&end);
+    cout << "Elapsed time: " << end - start << "s" << endl;
     // Escrita de todos os dados codificados para o arquivo de saida
     {
         header_file.close();
