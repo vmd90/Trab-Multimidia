@@ -82,6 +82,10 @@ clean:
 $(TARGET_DIR):
 	mkdir -p $(TARGET_DIR)
 
+move:
+	mv $(TARGET_DIR)/encode .
+	mv $(TARGET_DIR)/decode .
+
 # Enable dependency checking
 .KEEP_STATE:
 .KEEP_STATE_FILE:.make.state.GNU-amd64-Linux

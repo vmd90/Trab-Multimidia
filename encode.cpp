@@ -29,7 +29,7 @@ int main(int argc, char const *argv[])
         return 0;
     }
 
-    int txtblck;
+    int txtblck = -1;
     bool use_bwt = false, use_huffman = false, use_runl = false;
     bool error = false;
     string arg;
@@ -74,10 +74,11 @@ int main(int argc, char const *argv[])
             }
         }
         else if (arg.find("--txtblck") != string::npos) {
-            // Extrai o parametro txtblck, true ou false
+            // Extrai o parametro txtblck
             istringstream ss(arg);
             string s;
             std::getline(ss, s, '=');
+            s.clear();
             std::getline(ss, s, '='); // Duas vezes para pegar a ultima string
             if (s.empty()) {
                 cerr << "Incomplete argument: " << arg << endl;
@@ -139,6 +140,13 @@ int main(int argc, char const *argv[])
             break;
         }
     }
+    // verificando se usuario nao esqueceu o txtblck
+	if(use_bwt) {
+		if (txtblck == -1) {
+			cerr << "Error: invalid value for argument --txtblck" << endl;
+			error = true;
+		}
+	}
 
     // Caso erro, abortar imediatamente
     if (error) {
@@ -151,7 +159,7 @@ int main(int argc, char const *argv[])
         return 1;
     }
     
-    // Header basica do arquivo codificado
+    // Header do arquivo codificado
     {
         header_file.open(".header", fstream::out | fstream::binary);
         if(!header_file.is_open()) {
@@ -164,6 +172,10 @@ int main(int argc, char const *argv[])
     {
         fstream temp(".temp", fstream::out | fstream::binary);
         fstream in_file(in_file_name, fstream::in | fstream::binary);
+        if(!temp.is_open() || !in_file.is_open()) {
+            cerr << "Error opening file '" << in_file_name << "'" << endl;
+            return 1;
+        }
         copy_file(temp, in_file);
     }
     // Tempo
